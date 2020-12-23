@@ -115,9 +115,9 @@ InnoDB 存储引擎在 MySQL 5.6.4 版本中也开始支持全文索引。
 
 #### 4. 空间数据索引
 
-MyISAM 存储引擎支持空间数据索引（R-Tree），可以用于地理数据存储。空间数据索引会从所有维度来索引数据，可以有效地使用任意维度来进行组合查询。
+MyISAM 存储引擎支持空间数据索引（R-Tree），可以用于地理数据存储[Geometry data store]。空间数据索引会从所有维度来索引数据，可以有效地使用任意维度来进行组合查询。
 
-必须使用 GIS 相关的函数来维护数据。
+必须使用 `GIS` 相关的函数来维护数据。
 
 ### 索引优化
 
@@ -139,6 +139,8 @@ SELECT actor_id FROM sakila.actor WHERE actor_id + 1 = 5;
 SELECT film_id, actor_ id FROM sakila.film_actor
 WHERE actor_id = 1 AND film_id = 1;
 ```
+
+> less use, multi line index
 
 #### 3. 索引列的顺序
 
@@ -187,11 +189,11 @@ customer_id_selectivity: 0.0373
 
 ### 索引的使用条件
 
-- 对于非常小的表、大部分情况下简单的全表扫描比建立索引更高效；
+- 不适: 对于非常`小`的表、大部分情况下简单的全表扫描比建立索引更高效；
 
-- 对于中到大型的表，索引就非常有效；
+- 明显: 对于`中到大型`的表，索引就非常有效；
 
-- 但是对于特大型的表，建立和维护索引的代价将会随之增长。这种情况下，需要用到一种技术可以直接区分出需要查询的一组数据，而不是一条记录一条记录地匹配，例如可以使用分区技术。
+- 不适: 但是对于`特大型`的表，建立和维护索引的代价将会随之增长。这种情况下，需要用到一种技术可以直接区分出需要查询的一组数据，而不是一条记录一条记录地匹配，例如可以使用`分区`技术。
 
 ## 二、查询性能优化
 
@@ -221,7 +223,9 @@ Explain 用来分析 SELECT 查询语句，开发人员可以通过分析 Explai
 
 #### 1. 切分大查询
 
-一个大查询如果一次性执行的话，可能一次锁住很多数据、占满整个事务日志、耗尽系统资源、阻塞很多小的但重要的查询。
+- 一个大查询如果一次性执行的话，可能一次锁住很多数据、占满整个事务日志、耗尽系统资源、阻塞很多小的但重要的查询。
+- limit 限制执行的行数,以此分割执行
+- 很实用的技巧.应是适用于非幂等操作,cud.
 
 ```sql
 DELETE FROM messages WHERE create < DATE_SUB(NOW(), INTERVAL 3 MONTH);
@@ -384,7 +388,7 @@ MySQL 提供了 FROM_UNIXTIME() 函数把 UNIX 时间戳转换为日期，并提
 
 - 使用全局唯一 ID（GUID）
 - 为每个分片指定一个 ID 范围
-- 分布式 ID 生成器 (如 Twitter 的 Snowflake 算法)
+- 分布式 ID 生成器 (如 Twitter 的 [Snowflake](https://github.com/twitter-archive/snowflake/releases/tag/snowflake-2010) 算法)
 
 ## 六、复制
 
@@ -404,11 +408,11 @@ MySQL 提供了 FROM_UNIXTIME() 函数把 UNIX 时间戳转换为日期，并提
 
 读写分离能提高性能的原因在于：
 
-- 主从服务器负责各自的读和写，极大程度缓解了锁的争用；
-- 从服务器可以使用 MyISAM，提升查询性能以及节约系统开销；
+- 主从服务器负责各自的读和写，极大程度缓解了`锁的争用`；
+- 从服务器可以使用 `MyISAM`，提升查询性能以及节约系统开销；
 - 增加冗余，提高可用性。
 
-读写分离常用代理方式来实现，代理服务器接收应用层传来的读写请求，然后决定转发到哪个服务器。
+读写分离常用代理方式来实现，代理服务器接收应用层传来的读写请求，然后决定转发到哪个服务器。[Load balancer layer]
 
 <div align="center"> <img src="https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/master-slave-proxy.png" width=""> </div><br>
 
