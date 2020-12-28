@@ -657,6 +657,7 @@ SELECT @result; -- 获取结果
 ```
 
 DELETE 触发器包含一个名为 OLD 的虚拟表，并且是只读的。
+> old.id 可以选定
 
 UPDATE 触发器包含一个名为 NEW 和一个名为 OLD 的虚拟表，其中 NEW 是可以被修改的，而 OLD 是只读的。
 
